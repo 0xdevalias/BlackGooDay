@@ -61,6 +61,14 @@ func (b *BlackGoo) RenderNode(w io.Writer, node *bf.Node, entering bool) bf.Walk
 			b.curRun.AddText(string(node.Literal))
 		}
 		b.curRun = nil
+	case bf.Strong:
+		if entering {
+			if b.curRun == nil {
+				r := b.curParagraph.AddRun()
+				b.curRun = &r
+			}
+			b.curRun.Properties().SetBold(true)
+		}
 	default:
 		if b.Debug {
 			child := node.FirstChild
