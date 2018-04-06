@@ -2,8 +2,10 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"log"
+	"strings"
 
 	"baliance.com/gooxml/document"
 	bf "github.com/russross/blackfriday"
@@ -12,6 +14,7 @@ import (
 type BlackGoo struct {
 	d *document.Document
 	TitleStyle string
+	Debug bool
 }
 
 var _ bf.Renderer = &BlackGoo{}
@@ -40,7 +43,18 @@ func (b *BlackGoo) RenderNode(w io.Writer, node *bf.Node, entering bool) bf.Walk
 		}
 		return bf.SkipChildren
 	default:
-		log.Printf("The '%s' node type is not implemented yet (entering=%v)", node.Type, entering)
+		if b.Debug {
+			child := node.FirstChild
+			//var children []*bf.Node
+			var children []string
+			for child != nil {
+				children = append(children, fmt.Sprintf("%+v", child.Type))
+				child = child.FirstChild
+			}
+			childrenS := strings.Join(children, "->")
+			log.Printf("[debug] %+v (entering=%v, firstChildren=%s)\n", node, entering, childrenS)
+		}
+		//log.Printf("The '%s' node type is not implemented yet (entering=%v)", node.Type, entering)
 		//panic("Unknown node type " + node.Type.String())
 	}
 	return bf.GoToNext
@@ -62,6 +76,7 @@ func RunnyBlackGoo(input []byte, opts ...bf.Option) []byte {
 	renderer := &BlackGoo{
 		d: doc,
 		TitleStyle: "Title",
+		Debug: true,
 	}
 
 	optList := []bf.Option{bf.WithRenderer(renderer), bf.WithExtensions(bf.CommonExtensions)}
