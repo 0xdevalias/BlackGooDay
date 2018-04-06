@@ -11,6 +11,7 @@ import (
 
 type BlackGoo struct {
 	d *document.Document
+	TitleStyle string
 }
 
 var _ bf.Renderer = &BlackGoo{}
@@ -26,6 +27,18 @@ var _ bf.Renderer = (*BlackGoo)(nil)
 
 func (b *BlackGoo) RenderNode(w io.Writer, node *bf.Node, entering bool) bf.WalkStatus {
 	switch node.Type {
+	case bf.Heading:
+		if entering &&
+			node.FirstChild != nil &&
+			node.FirstChild.Type == bf.Text &&
+			node.FirstChild.Literal != nil {
+			p := b.d.AddParagraph()
+			p.Properties().SetStyle(b.TitleStyle)
+
+			r := p.AddRun()
+			r.AddText(string(node.FirstChild.Literal))
+		}
+		return bf.SkipChildren
 	default:
 		log.Printf("The '%s' node type is not implemented yet (entering=%v)", node.Type, entering)
 		//panic("Unknown node type " + node.Type.String())
@@ -44,9 +57,11 @@ func (b *BlackGoo) RenderFooter(w io.Writer, ast *bf.Node) {
 func RunnyBlackGoo(input []byte, opts ...bf.Option) []byte {
 	//renderer := BlackGooDay()
 	doc := document.New()
+	doc.Styles.InitializeDefault()
 
 	renderer := &BlackGoo{
 		d: doc,
+		TitleStyle: "Title",
 	}
 
 	optList := []bf.Option{bf.WithRenderer(renderer), bf.WithExtensions(bf.CommonExtensions)}
