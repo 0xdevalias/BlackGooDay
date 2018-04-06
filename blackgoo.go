@@ -77,6 +77,22 @@ func (b *BlackGoo) RenderNode(w io.Writer, node *bf.Node, entering bool) bf.Walk
 			}
 			b.curRun.Properties().SetItalic(true)
 		}
+	case bf.Link:
+		if entering && node.FirstChild != nil && node.FirstChild.Literal != nil {
+			h := b.curParagraph.AddHyperLink()
+
+			if node.LinkData.Destination != nil {
+				h.SetTarget(string(node.LinkData.Destination))
+			}
+
+			if node.LinkData.Title != nil {
+				h.SetToolTip(string(node.LinkData.Title))
+			}
+
+			r := h.AddRun()
+			r.AddText(string(node.FirstChild.Literal))
+		}
+		return bf.SkipChildren
 	default:
 		if b.Debug {
 			child := node.FirstChild
