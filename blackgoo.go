@@ -15,6 +15,8 @@ type BlackGoo struct {
 	d *document.Document
 	TitleStyle string
 	Debug bool
+
+	curParagraph *document.Paragraph
 }
 
 var _ bf.Renderer = &BlackGoo{}
@@ -42,6 +44,13 @@ func (b *BlackGoo) RenderNode(w io.Writer, node *bf.Node, entering bool) bf.Walk
 			r.AddText(string(node.FirstChild.Literal))
 		}
 		return bf.SkipChildren
+	case bf.Paragraph:
+		if entering {
+			p := b.d.AddParagraph()
+			b.curParagraph = &p
+		} else {
+			b.curParagraph = nil
+		}
 	default:
 		if b.Debug {
 			child := node.FirstChild
