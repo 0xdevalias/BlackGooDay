@@ -2,6 +2,31 @@
 
 
 [[projects]]
+  name = "baliance.com/gooxml"
+  packages = [
+    ".",
+    "algo",
+    "color",
+    "common",
+    "document",
+    "measurement",
+    "schema/soo/dml",
+    "schema/soo/dml/picture",
+    "schema/soo/ofc/docPropsVTypes",
+    "schema/soo/ofc/extended_properties",
+    "schema/soo/ofc/math",
+    "schema/soo/ofc/sharedTypes",
+    "schema/soo/pkg/content_types",
+    "schema/soo/pkg/metadata/core_properties",
+    "schema/soo/pkg/relationships",
+    "schema/soo/schemaLibrary",
+    "schema/soo/wml",
+    "zippkg"
+  ]
+  revision = "26fad5d249947d1859a4c3849fe74128728c832f"
+  version = "v0.7.0"
+
+[[projects]]
   name = "github.com/russross/blackfriday"
   packages = ["."]
   revision = "cadec560ec52d93835bf2f15bd794700d3a2473b"
@@ -16,6 +41,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "7e41574846e5cbae82c84bab5e2e655e842f4000964fcb68be48b2d2c55017f9"
+  inputs-digest = "1ae9d87ab6215e2d9e21fb59b5cbd1df582c714bc5f6b9a2043aa70a541488cf"
   solver-name = "gps-cdcl"
   solver-version = 1

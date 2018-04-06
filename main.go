@@ -13,5 +13,10 @@ func main() {
 		log.Fatalf("failed to read markdown file: %v", err)
 	}
 
-	RunnyBlackGoo(md)
+	docBytes := RunnyBlackGoo(md)
+
+	err = ioutil.WriteFile("example.docx", docBytes,0644)
+	if err != nil {
+		log.Fatalf("failed to write output document: %v", err)
+	}
 }
