@@ -18,6 +18,8 @@ type BlackGoo struct {
 
 	curParagraph *document.Paragraph
 	curRun *document.Run
+	curListLevel int
+	numDef document.NumberingDefinition
 }
 
 var _ bf.Renderer = &BlackGoo{}
@@ -47,8 +49,11 @@ func (b *BlackGoo) RenderNode(w io.Writer, node *bf.Node, entering bool) bf.Walk
 		return bf.SkipChildren
 	case bf.Paragraph:
 		if entering {
-			p := b.d.AddParagraph()
-			b.curParagraph = &p
+			// We check this because list items seem to nest themselves in a paragraph
+			if b.curParagraph == nil {
+				p := b.d.AddParagraph()
+				b.curParagraph = &p
+			}
 		} else {
 			b.curParagraph = nil
 		}
@@ -93,6 +98,22 @@ func (b *BlackGoo) RenderNode(w io.Writer, node *bf.Node, entering bool) bf.Walk
 			r.AddText(string(node.FirstChild.Literal))
 		}
 		return bf.SkipChildren
+	case bf.List:
+		if entering {
+			b.curListLevel += 1
+		} else {
+			b.curListLevel -= 1
+		}
+	case bf.Item:
+		if entering {
+			p := b.d.AddParagraph()
+			p.SetNumberingDefinition(b.numDef)
+			p.SetNumberingLevel(b.curListLevel - 1)
+
+			b.curParagraph = &p
+		} else {
+			b.curParagraph = nil
+		}
 	default:
 		if b.Debug {
 			debugNode(node, entering)
@@ -134,9 +155,12 @@ func RunnyBlackGoo(input []byte, opts ...bf.Option) []byte {
 	doc := document.New()
 	doc.Styles.InitializeDefault()
 
+	// We need some numbering definitions for lists
+	nd := doc.Numbering.Definitions()[0]
 	renderer := &BlackGoo{
 		d: doc,
 		TitleStyle: "Title",
+		numDef: nd,
 		Debug: true,
 	}
 
