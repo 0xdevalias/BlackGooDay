@@ -95,20 +95,30 @@ func (b *BlackGoo) RenderNode(w io.Writer, node *bf.Node, entering bool) bf.Walk
 		return bf.SkipChildren
 	default:
 		if b.Debug {
-			child := node.FirstChild
-			//var children []*bf.Node
-			var children []string
-			for child != nil {
-				children = append(children, fmt.Sprintf("%+v", child.Type))
-				child = child.FirstChild
-			}
-			childrenS := strings.Join(children, "->")
-			log.Printf("[debug] %+v (entering=%v, firstChildren=%s)\n", node, entering, childrenS)
+			debugNode(node, entering)
 		}
 		//log.Printf("The '%s' node type is not implemented yet (entering=%v)", node.Type, entering)
 		//panic("Unknown node type " + node.Type.String())
 	}
 	return bf.GoToNext
+}
+
+func debugNode(node *bf.Node, entering bool) {
+	child := node.FirstChild
+	//var children []*bf.Node
+	var children []string
+	for child != nil {
+		children = append(children, fmt.Sprintf("%+v", child.Type))
+
+		if child.FirstChild != nil {
+			child = child.FirstChild
+		} else if child.Literal != nil {
+			children = append(children, fmt.Sprintf(`"%s"`, child.Literal))
+			break
+		}
+	}
+	childrenS := strings.Join(children, "->")
+	log.Printf("[debug] %+v (entering=%v, firstChildren=%s)\n", node, entering, childrenS)
 }
 
 func (b *BlackGoo) RenderHeader(w io.Writer, ast *bf.Node) {
