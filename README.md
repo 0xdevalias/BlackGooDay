@@ -12,3 +12,6 @@ go run *.go
 
 * [russross/blackfriday (v2)](https://github.com/russross/blackfriday/tree/v2)
 * [Ambrevar/blackfriday-latex](https://github.com/Ambrevar/blackfriday-latex/blob/master/latex.go)
+* Want more shiny and chroma? Witness this:
+    * https://github.com/Depado/bfchroma/
+    * https://github.com/alecthomas/chroma
