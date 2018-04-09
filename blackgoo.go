@@ -36,17 +36,14 @@ var _ bf.Renderer = (*BlackGoo)(nil)
 func (b *BlackGoo) RenderNode(w io.Writer, node *bf.Node, entering bool) bf.WalkStatus {
 	switch node.Type {
 	case bf.Heading:
-		if entering &&
-			node.FirstChild != nil &&
-			node.FirstChild.Type == bf.Text &&
-			node.FirstChild.Literal != nil {
+		if entering {
 			p := b.d.AddParagraph()
+			// TODO: Properly handle heading levels: node.HeadingData.Level
 			p.Properties().SetStyle(b.TitleStyle)
-
-			r := p.AddRun()
-			r.AddText(string(node.FirstChild.Literal))
+			b.curParagraph = &p
+		} else {
+			b.curParagraph = nil
 		}
-		return bf.SkipChildren
 	case bf.Paragraph:
 		if entering {
 			// We check this because list items seem to nest themselves in a paragraph
