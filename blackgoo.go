@@ -80,6 +80,7 @@ func (b *BlackGoo) RenderNode(w io.Writer, node *bf.Node, entering bool) bf.Walk
 			b.curRun.Properties().SetItalic(true)
 		}
 	case bf.Link:
+		// TODO: Improve this implementation.. hacky
 		if entering && node.FirstChild != nil && node.FirstChild.Literal != nil {
 			h := b.curParagraph.AddHyperLink()
 
@@ -114,9 +115,9 @@ func (b *BlackGoo) RenderNode(w io.Writer, node *bf.Node, entering bool) bf.Walk
 	default:
 		if b.Debug {
 			debugNode(node, entering)
+		} else {
+			fmt.Errorf("error: unknown node type: %s", node.Type.String())
 		}
-		//log.Printf("The '%s' node type is not implemented yet (entering=%v)", node.Type, entering)
-		//panic("Unknown node type " + node.Type.String())
 	}
 	return bf.GoToNext
 }
